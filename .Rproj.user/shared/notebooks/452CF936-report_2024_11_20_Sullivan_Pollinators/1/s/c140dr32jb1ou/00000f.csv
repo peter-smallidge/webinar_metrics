@@ -1,0 +1,7 @@
+"0","# Write the formatted summary metrics to the data frame of the specified path
+write_xlsx(summary_page, output_file_summary)
+"
+"2","[ERROR] workbook_close(): Error creating 'C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2024.data.attend.exit\2024_11_20_Sullivan_pollinators_summary.xlsx'. System error = Permission denied
+"
+"2","Error: Error in libxlsxwriter: 'Error creating output xlsx file. Usually a permissions error.'
+"

@@ -1,0 +1,27 @@
+"0","  df[] <- lapply(df, function(x) {
+    if (is.character(x)) {
+      # Escape LaTeX special characters
+      x <- gsub(""%"", ""\\\\%"", x)
+      x <- gsub(""&"", ""\\\\&"", x)
+      x <- gsub(""#"", ""\\\\#"", x)
+      x <- gsub(""_"", ""\\\\_"", x)
+      x <- gsub(""\\$"", ""\\\\$"", x)
+      x <- gsub(""\\!"", ""\\\\!"", x)
+      x <- gsub(""\\{"", ""\\\\{"", x)
+      x <- gsub(""\\}"", ""\\\\}"", x)
+
+      # Fix curly quotes
+      x <- gsub(""[\u201C\u201D]"", ""\"""", x) # “ ” to ""
+      x <- gsub(""[\u2018\u2019]"", ""'"", x)  # ‘ ’ to '
+
+      # Optional: if you want to fix en-dashes/em-dashes too:
+      # x <- gsub(""\u2013|\u2014"", ""--"", x) # – and — to double dash
+    }
+    x
+  })
+"
+"2","G1;H1;Errorh in df[] <- lapply(df, function(x) { : 
+  object of type 'closure' is not subsettable
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"

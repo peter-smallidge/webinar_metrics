@@ -1,0 +1,443 @@
+---
+title: "Analysis of ForestConnect Webinar"
+author: "NYS Hemlock Initiative, by Mark Whitmore on 18 September 2024"
+date: "`r Sys.Date()`"
+output: pdf_document
+knitr:
+  opts_chunk: 
+    echo: FALSE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+<!-- This is a hidden comment that won't print in Knitr for Rmarkdown -->
+
+```{r echo = FALSE}
+
+
+# ## R Markdown
+# 
+# This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# 
+# When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+    
+```
+
+
+```{r echo = FALSE}
+
+
+```
+
+
+
+```{r echo=FALSE}
+library(readxl)
+library(readr)
+#library(skimr)
+library(tidyr)
+library(tidyverse)
+#library(tidytable)  ## CAUTION this may conflict with dplyr functions
+library(ggplot2)
+library(ggpubr)
+library(dplyr)
+#install.packages("writexl")
+library(writexl)
+library(scales)
+
+#tinytex::install_tinytex()
+#install.packages("tinytex")
+library(tinytex)
+
+#install.packages("kableExtra")
+library(kableExtra)
+
+#install.packages("rmarkdown")
+```
+
+
+
+```{r echo = FALSE}
+# create a worksheet that is cleaned with the following features
+# a. name the worksheet "full_cleaned". Manually condense users with multiple entries.
+# b. retain attended and those who didn't attend
+# c. remove the day/month/year (or see the code for "str_remove")
+# d. use these as variables: attended	user	first	last	email	country	postal	
+#       state	join	leave	duration	perspective	ceu	acres	notifications
+# e. paste the variable from step "d" into row 11.
+# f. past these varialbes into row 10 of the qualtrics file
+#     responded	perspective	perspective_other	viewing	state	acres	awareness	knowledge	
+#     action	general_comment	webinar_freq	workshop_freq	topics	
+#     logistics	logistics_other	questions	miles	dollars
+```
+
+
+```{r echo = FALSE}
+# Create Paths
+
+file_path_zoom <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_09_18_Whitmore_HWA.xlsx"
+
+file_path_qualtrics <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_09_18_Whitmore_HWA_qualtrics.xlsx"
+
+webinar_name <- "2024_09_18_Whitmore_HWA" 
+
+output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2024.data.attend.exit/"
+
+```
+
+
+```{r  echo = FALSE}
+# Read Data from Zoom and Qualtrics
+
+
+input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=10) %>% 
+    mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres varaible
+    mutate(acres = if_else(
+        str_detect(acres, "-"),
+        str_extract(acres, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
+        acres
+  )) %>% 
+    mutate(join = str_remove(join, "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b")) %>%  #removes day/month/year from "join"
+    mutate(leave = str_remove(leave, "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b")) %>% #removes day/month/year from "leave"
+    mutate(
+        duration = as.numeric(duration),
+        acres = as.numeric(acres)
+    )
+
+input_qualtrics <- read_excel(file_path_qualtrics, sheet = 1, skip = 10) %>% 
+    select(perspective, state, acres, awareness, knowledge, action, general_comment,
+           webinar_freq, workshop_freq, topics, logistics, questions, miles, dollars) %>% 
+    mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres varaible
+    mutate(acres = if_else(
+        str_detect(acres, "-"),
+        str_extract(acres, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
+        acres
+  )) %>% 
+    mutate(miles = str_remove_all(miles, "[,\\+ ]")) %>% #removes those characters from the miles varaible
+    mutate(miles = if_else(
+        str_detect(miles, "-"),
+        str_extract(miles, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
+        miles
+  )) %>% 
+    mutate(dollars = str_remove_all(dollars, "[,\\+ ]")) %>% #removes those characters from the dollars varaible
+    mutate(dollars = if_else(
+        str_detect(dollars, "-"),
+        str_extract(dollars, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
+        dollars
+  )) %>% 
+    mutate(
+        acres = as.numeric(acres),
+        miles = as.numeric(miles),
+        dollars = as.numeric(dollars)
+        ) %>% 
+    mutate(awareness = fct_recode(awareness,
+                                  "abstain" = "Abstain (N/A)",
+                                  "high" = "High degree of change",
+                                  "mod_high" = "4",
+                                  "moderate" = "Moderate degree of change",
+                                  "min_mod" = "2",
+                                  "minimal" = "Minimal degree of change")
+           ) %>% 
+     mutate(knowledge = fct_recode(knowledge,
+                                  "abstain" = "Abstain (N/A)",
+                                  "high" = "High degree of change",
+                                  "mod_high" = "4",
+                                  "moderate" = "Moderate degree of change",
+                                  "min_mod" = "2",
+                                  "minimal" = "Minimal degree of change")
+           )
+
+
+```
+
+
+
+
+```{r echo = FALSE }
+# Create data file to paste into CEU documentation
+
+CEU_1 <- input_zoom %>% 
+    select(attended, first, last, email, postal, state, join, leave, duration, ceu) %>%
+    filter(!str_detect(ceu, "do not want or need")) %>% 
+    filter(! attended == "No") %>% 
+    select(email, first, last, postal, state, join, leave, duration, ceu) %>% 
+    arrange(ceu, last)
+
+
+# Construct the full file path
+output_file_ceu <- file.path(output_folder, paste0(webinar_name, "_CEU_1.xlsx"))
+
+# Write the CEU_1 data frame to the specified path
+write_xlsx(CEU_1, output_file_ceu)
+
+```
+
+
+
+
+```{r echo = FALSE }
+# Create file for listserve
+# EmailAddr_,FullName_
+
+
+listserve <- input_zoom %>% 
+    select(first, last, email, notifications) %>% 
+    filter(str_detect(notifications, "please add me")) %>% 
+    mutate(full = paste(first, last, sep = " ")) %>% 
+    select(email, full) %>% 
+    rename(
+        EmailAddr_ = email,
+        FullName_  = full
+    )
+
+output_file_listserve <- file.path(output_folder, paste0(webinar_name, "_listserve.csv"))
+
+# Write the listserve data frame to the specified path
+write_csv(listserve, output_file_listserve)
+
+```
+
+
+
+```{r echo = FALSE }
+#Create a Summary Data for the Speaker
+
+
+summ_partic <- input_zoom %>% 
+    select(attended, state, duration, perspective, acres) %>% 
+    filter(attended == "Yes") %>% 
+    summarize(
+        Registered = n(),
+        Participants_gtr20min = sum(attended == "Yes" & duration > 19, na.rm = TRUE),
+        Total_Acres_gtr20min = sum(acres[attended == "Yes" & duration > 19], na.rm = TRUE),
+        # Sum of acres where attended == "Yes" and duration > 19
+        States_Provinces = n_distinct(state),
+    ) %>% 
+    mutate(
+        Total_Acres_gtr20min = scales::comma(Total_Acres_gtr20min),
+        Registered = as.character(Registered),
+        Participants_gtr20min = as.character(Participants_gtr20min),
+        States_Provinces = as.character(States_Provinces)
+    ) %>% 
+    pivot_longer(c(Registered, Participants_gtr20min, Total_Acres_gtr20min, States_Provinces), names_to = "Metric", values_to = "Impact") %>% 
+    mutate(
+        sequence = c("A", "B", "D", "P")
+    )
+    
+    
+#this data frame ensures all levels of perspective are included for consistent reporting of rows into the table
+missing_perspectives <- data.frame(
+  perspective = c("Grazier", "Forester", "Woodland Owner", "Agency or Institution",
+                  "Logger/Forest Practitioner", "NGO", "Natural Resources Specialist",
+                  "Other", "Maple Producer", "Educator"),  # Add your missing perspective values here
+  count_attended = 0,
+  pct_perspective = 0
+)
+
+summ_perspective1 <- input_zoom %>% 
+  filter(attended == "Yes") %>%  # Filter to only attended == "Yes"
+  group_by(perspective) %>%  # Group by perspective
+  summarize(
+    count_attended = n(),  # Count the number of rows for each perspective
+    pct_perspective = (count_attended / nrow(filter(input_zoom, attended == "Yes"))) * 100  
+    # Calculate percentage for each group_by
+  ) %>% 
+  mutate_if(is.numeric, round, 0) %>% 
+  arrange(perspective)  # Sort by perspective alphabetically
+
+summ_perspective2 <- bind_rows(summ_perspective1, missing_perspectives) %>% 
+    group_by(perspective) %>% 
+    summarize(
+        Perspective_pct = sum(pct_perspective)
+    ) %>% 
+    rename(
+            Metric = perspective,
+            Impact = Perspective_pct
+        ) %>% 
+    mutate(
+        Impact = as.character(Impact)
+    ) %>% 
+    mutate(
+        sequence = c("F", "G", "H", "I", "J", "K", "L", "M", "N", "O")
+    )
+
+    
+
+summ_ceu <- CEU_1 %>% 
+    summarize(
+        CEU_requested = n()
+    ) %>% 
+    pivot_longer(c(CEU_requested), names_to = "Metric", values_to = "Impact") %>% 
+    mutate(
+        Impact = as.character(Impact)
+    ) %>% 
+    mutate(
+        sequence = c("W")
+    )
+    
+
+
+exit_metrics <- input_qualtrics %>%
+    select(perspective, acres, awareness, knowledge, action, general_comment, miles, dollars) %>% 
+    summarize(
+        Survey_respondents = n(),
+        acres_qualtrics = sum(acres, na.rm = TRUE),
+        Miles_equivalent = sum(miles, na.rm = TRUE),
+        Action_intended_count = sum(!is.na(action)),
+        Action_pct = (Action_intended_count / Survey_respondents) * 100,
+        Financial_impact = sum(dollars, na.rm = TRUE),
+        Awareness_pct = sum(awareness %in% c("high", "mod_high", "moderate")) / sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100,
+        Knowledge_pct = sum(knowledge %in% c("high", "mod_high", "moderate")) / sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100
+    ) %>% 
+    mutate_if(is.numeric, round, 0) %>% 
+    mutate(
+        acres_qualtrics = scales::comma(acres_qualtrics),
+        Miles_equivalent = scales::comma(Miles_equivalent),
+        Financial_impact = scales::dollar(Financial_impact)
+    ) %>% 
+    mutate(
+        Survey_respondents = as.character(Survey_respondents),
+        Action_intended_count = as.character(Action_intended_count),
+        Action_pct = as.character(Action_pct),
+        Awareness_pct = as.character(Awareness_pct),
+        Knowledge_pct = as.character(Knowledge_pct)
+    ) %>% 
+    pivot_longer(c(Survey_respondents, acres_qualtrics, Miles_equivalent, Action_intended_count, Action_pct,
+                   Financial_impact, Awareness_pct, Knowledge_pct),
+                 names_to = "Metric", values_to = "Impact") %>% 
+    mutate(
+        sequence = c("C", "E", "U", "Q", "R", "V", "S", "T")
+    )
+```
+
+
+
+```{r echo = FALSE }
+
+# Bind Rows to form the summary page of the report about the webinar
+
+
+summary_page <- bind_rows(summ_partic, summ_perspective2, summ_ceu, exit_metrics) %>% 
+    arrange(sequence) %>% 
+    select(Metric, Impact) %>% 
+    mutate(Metric = recode(Metric,
+                  "Registered" = "Number Registered",
+                  "Participants_gtr20min" = "Participants > 20 minutes",
+                  "Survey_respondents" = "Number of Survey Respondents",
+                  "Total_Acres_gtr20min" = "Total Forested Acres (> 20 minutes)",
+                  "acres_qualtrics" = "Total Forested Acres (Qualtrics respondents)",
+                  "Agency or Institution" = "Agency or Institution (% participants)",
+                  "Educator" = "Educator (% participants)",
+                  "Forester" = "Forester (% participants)",
+                  "Grazier" = "Grazier or Farmer (% participants)",
+                  "Logger/Forest Practitioner" = "Logger/Forest Practitioner (% participants)",
+                  "Maple Producer" = "Maple Producer (% participants)",
+                  "NGO" = "NGO (% participants)",
+                  "Natural Resources Specialist" = "Natural Resources Specialist (% participants)",
+                  "Other" = "Other (% participants)",
+                  "Woodland Owner" = "Woodland Owner (% participants)",
+                  "States_Provinces" = "Number of States/Provinces",
+                  "Action_intended_count" = "# Respondents Intending Actions",
+                  "Action_pct" = "% Respondents Intending Actions",
+                  "Awareness_pct" = "% Respondents with > Moderate Change in Awareness",
+                  "Knowledge_pct" = "% Respondents with > Moderate Change in Knowledge",
+                  "Miles_equivalent" = "Total Mileage Equivalent for Travel to a Comparable Seminar",
+                  "Financial_impact" = "Estimate of Money to be Earned, Saved or Spent",
+                  "CEU_requested" = "Number of CEU Requests"
+    )
+    )
+
+
+output_file_summary <- file.path(output_folder, paste0(webinar_name, "_summary.xlsx"))
+
+# Write the formatted summary metrics to the data frame of the specified path
+write_xlsx(summary_page, output_file_summary)
+
+
+```
+
+
+
+```{r echo = FALSE }
+#create summary of the Actions Intended
+
+
+actions <- input_qualtrics %>% 
+    select(perspective, action)%>% 
+    drop_na(action) %>% 
+    rename(
+           "Perspective" = "perspective",
+           "Intended Action"  = "action"
+    ) %>% 
+    arrange(Perspective)
+
+```
+
+
+
+```{r echo = FALSE }
+#create summary of the General Comments
+
+
+general <- input_qualtrics %>% 
+    select(perspective, general_comment)%>% 
+    drop_na(general_comment) %>% 
+    filter(!general_comment == "None" | general_comment == "none") %>%
+    rename(
+           "Perspective" = "perspective",
+           "General Comments"  = "general_comment"
+    ) %>% 
+    arrange(Perspective)
+
+
+
+```
+
+[webinar archived at](https://youtu.be/My4K73fBLf4) https://youtu.be/My4K73fBLf4
+
+```{r echo = FALSE}
+
+# kable(summary_page, caption = "Summary of Webinar Metrics") %>%
+#   kable_styling(full_width = FALSE, position = "center", latex_options = "hold_position") # no lines
+
+
+kable(summary_page, caption = "Summary of Webinar Metrics") %>%
+  kable_styling(full_width = FALSE, position = "center", 
+                latex_options = c("striped", "hold_position")) %>%
+  #add_header_above(c(" " = 2)) %>%   # Add space to header if needed
+  row_spec(0, bold = TRUE, font_size = 14) %>%  # Optional: styling header row
+  row_spec(1:nrow(summary_page), hline_after = TRUE)  # Add horizontal lines after each row
+```
+
+
+
+```{r}
+kable(general, caption = "General Comments by Survey Respondents") %>% 
+      kable_styling(full_width = FALSE, position = "center", 
+                latex_options = c("striped", "hold_position")) %>%
+  add_header_above(c(" " = 2)) %>%   # Add space to header if needed
+  row_spec(0, bold = TRUE, font_size = 14) %>%  # Optional: styling header row
+  row_spec(1:nrow(general), hline_after = TRUE) %>%   # Add horizontal lines after each row
+  column_spec(2, width = "10cm")
+```
+
+
+\newpage
+```{r}
+kable(actions, caption = "Actions Intended by Survey Respondents as a Result of the Webinar") %>% 
+      kable_styling(full_width = FALSE, position = "center", 
+                latex_options = c("striped", "hold_position")) %>%
+  add_header_above(c(" " = 2)) %>%   # Add space to header if needed
+  row_spec(0, bold = TRUE, font_size = 14) %>%  # Optional: styling header row
+  row_spec(1:nrow(actions), hline_after = TRUE) %>%   # Add horizontal lines after each row
+  column_spec(2, width = "10cm")
+
+```
+

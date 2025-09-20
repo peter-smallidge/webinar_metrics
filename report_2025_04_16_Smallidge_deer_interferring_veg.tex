@@ -1,0 +1,563 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Analysis of ForestConnect Webinar},
+  pdfauthor={Deer, Interfering Vegetation, and Factors to Guide the Treatment of the Green Lie, by Dr.~Peter Smallidge April 16, 2025},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Analysis of ForestConnect Webinar}
+\author{Deer, Interfering Vegetation, and Factors to Guide the Treatment
+of the Green Lie, by Dr.~Peter Smallidge April 16, 2025}
+\date{2025-04-28}
+
+\begin{document}
+\maketitle
+
+{[}webinar archived at{]} \url{https://youtu.be/XPZTAeAldIA}
+
+\begin{longtable}[t]{ll}
+\caption{\label{tab:unnamed-chunk-11}Summary of Webinar Metrics}\\
+\toprule
+\begingroup\fontsize{14}{16}\selectfont \textbf{Metric}\endgroup & \begingroup\fontsize{14}{16}\selectfont \textbf{Impact}\endgroup\\
+\midrule
+\cellcolor{gray!10}{Number Registered} & \cellcolor{gray!10}{245}\\
+\midrule
+Participants > 20 minutes & 237\\
+\midrule\\
+\cellcolor{gray!10}{Number of Survey Respondents} & \cellcolor{gray!10}{133}\\
+\midrule
+Total Forested Acres (> 20 minutes) & 21,984,538\\
+\midrule
+\cellcolor{gray!10}{Total Forested Acres (Qualtrics respondents)} & \cellcolor{gray!10}{1,588,333}\\
+\midrule
+\addlinespace
+Agency or Institution (\% participants) & 9\\
+\midrule
+\cellcolor{gray!10}{Educator (\% participants)} & \cellcolor{gray!10}{4}\\
+\midrule
+Forester (\% participants) & 38\\
+\midrule
+\cellcolor{gray!10}{Grazier or Farmer (\% participants)} & \cellcolor{gray!10}{0}\\
+\midrule
+Logger/Forest Practitioner (\% participants) & 2\\
+\midrule
+\addlinespace
+\cellcolor{gray!10}{Maple Producer (\% participants)} & \cellcolor{gray!10}{0}\\
+\midrule
+NGO (\% participants) & 4\\
+\midrule
+\cellcolor{gray!10}{Natural Resources Specialist (\% participants)} & \cellcolor{gray!10}{6}\\
+\midrule
+Other (\% participants) & 7\\
+\midrule
+\cellcolor{gray!10}{Woodland Owner (\% participants)} & \cellcolor{gray!10}{31}\\
+\midrule
+\addlinespace
+Number of States/Provinces & 28\\
+\midrule\\
+\cellcolor{gray!10}{\# Respondents Intending Actions} & \cellcolor{gray!10}{99}\\
+\midrule
+\% Respondents Intending Actions & 74\\
+\midrule
+\cellcolor{gray!10}{\% Respondents with > Moderate Change in Awareness} & \cellcolor{gray!10}{78}\\
+\midrule
+\% Respondents with > Moderate Change in Knowledge & 80\\
+\midrule
+\addlinespace
+\cellcolor{gray!10}{Total Mileage Equivalent for Travel to a Comparable Seminar} & \cellcolor{gray!10}{10,207}\\
+\midrule
+Estimate of Money to be Earned, Saved or Spent & \$34,730\\
+\midrule
+\cellcolor{gray!10}{Number of CEU Requests} & \cellcolor{gray!10}{117}\\
+\midrule
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{5cm}>{\raggedright\arraybackslash}p{10cm}}
+\caption{\label{tab:unnamed-chunk-12}General Comments by Survey Respondents}\\
+\toprule
+\multicolumn{2}{c}{ } \\
+
+\begingroup\fontsize{14}{16}\selectfont \textbf{Perspective}\endgroup & \begingroup\fontsize{14}{16}\selectfont \textbf{General Comments}\endgroup\\
+\midrule
+\cellcolor{gray!10}{Agency or institution} & \cellcolor{gray!10}{Thanks for yet another very informative (and timely) webinar!}\\
+\midrule
+Agency or institution & Peter is a skilled presenter.\\
+\midrule\\
+\cellcolor{gray!10}{Agency or institution} & \cellcolor{gray!10}{Good information and good presentation}\\
+\midrule
+Agency or institution & I think he echoed the views of my local foresters and biologists well.\\
+\midrule\\
+\cellcolor{gray!10}{Agency or institution} & \cellcolor{gray!10}{Thank you.}\\
+\midrule
+\addlinespace
+Educator & very good - like the info / ideas about HOW to tackle invasive plants.\\
+\midrule\\
+\cellcolor{gray!10}{Educator} & \cellcolor{gray!10}{Good work}\\
+\midrule
+Educator & N/A\\
+\midrule\\
+\cellcolor{gray!10}{Educator} & \cellcolor{gray!10}{Alway enjoy Pete's webinars}\\
+\midrule
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Excellent presentation}.  Thank you!\\
+\addlinespace
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Great \vphantom{1} presentation}\\
+\midrule
+Forester & Thanks for all the info\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{the program was thorough and informative}\\
+\midrule
+Forester & This is a great webinar for thought provoking discussion\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Great clear presentation as always Peter!!}\\
+\midrule
+\addlinespace
+Forester & Knowledgeable and interesting.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{excellent}\\
+\midrule
+Forester & Nicely presented.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Well done, nicely organized, great efforts, appreciated}\\
+\midrule
+Forester & I enjoyed the great presentation even though I already had high initial knowledge on the subject\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Reduce examples of treatment of beech as undesirable species}\\
+\midrule
+Forester & It was an excellent presentation\\
+\midrule\\
+Forester & Excellent presentation.\
+Forester & great presentation and enjoyed the exercise at the end.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{.}\\
+\midrule
+\addlinespace
+Forester & Great Presentation\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Very well presented}\\
+\midrule
+Forester & Great presentation\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Clear and concise on the topic}\\
+\midrule
+Forester & n/a\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{The presenter was knowledgeablw and made an interesting presentation.}\\
+\midrule
+Forester & Great job!\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Very nice job.}\\
+\midrule
+Forester & Great as always!\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Good session informed options for brush control}\\
+\midrule
+\addlinespace
+Forester & Excellent presentation.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{nice presentation}\\
+\midrule
+Logger / Forest practitioner & good speaker, held my interest\\
+\midrule\\
+\cellcolor{gray!10}{Logger / Forest practitioner} & \cellcolor{gray!10}{Good speaker, good presentation}\\
+\midrule
+NGO & Great presentation, very useful to have synthesis of the latest research on forest regen in NYS\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Natural resources specialist} & \cellcolor{gray!10}{There was a lot of discussion about removing beech trees, some context as to why would have been beneficial}\\
+\midrule
+Natural resources specialist & Good presentation.\\
+\midrule\\
+\cellcolor{gray!10}{Natural resources specialist} & \cellcolor{gray!10}{He is always on point and topical.}\\
+\midrule
+Natural resources specialist & presentation very informative\\
+\midrule\\
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{Informative, presentation great.}\\
+\midrule
+\addlinespace
+Other (please indicate) & Great presentation, very \vphantom{2} informative\\
+\midrule
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{Excellent. Loved the participant interaction.}\\
+\midrule
+Other (please indicate) & Great, tangible presentation. Much appreciated\\
+\midrule
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{Great presentation, very \vphantom{1} informative}\\
+\midrule
+Other (please indicate) & Great presentation, very informative\\
+\midrule
+\addlinespace
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{During the Webinar i asked if the link of Deer resistant plants could be shared.}\\
+\midrule
+Woodland owner & Great as usual\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Photos greatly help focus key ideas pointed out during illustration.  FVM Matrix was very helpful. Great Presentation!}\\
+\midrule
+Woodland owner & Excellent overview, especially liked the FVM matrix\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Thank you.}\\
+\midrule
+\addlinespace
+Woodland owner & Thank you for the clear presentation of evidence and considerarion of audience comments.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{excellent knowledge of subject and practical solutions - and pitfalls.}\\
+\midrule
+Woodland owner & It would be helpful to near a simple, less scientific summary of each part of the presentation before moving on tp a new topi.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Very good reinforcement of good practices}\\
+\midrule
+Woodland owner & Peter is great, he cannot retire.\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{He gives  all sides of solutions.}\\
+\midrule
+Woodland owner & These Forest Connect webinars are always valuable and there is no better source for private landowners like me..\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Very well done presentation.}\\
+\midrule
+Woodland owner & Very good presentation\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Great presentation}\\
+\midrule
+\addlinespace
+Woodland owner & The webinar was very general and a high-level overview of the subject matter\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Excellent; will rewatch the recording}\\
+\midrule
+Woodland owner & No specific comments. Presentation was good as usual.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Enjoyed the pace and the content presented. Struggled a little bit with the graphs until they were explained. There was a lot of data in those graphs.}\\
+\midrule
+Woodland owner & well organized and interesting\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{charming}\\
+\midrule
+Woodland owner & Informative. Very professional. Always learn something.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{thanks for the knowledge you share, this adds to my arsenal of tools or just gives me confidence i'm going down the right path}\\
+\midrule
+Woodland owner & I try to plant by mid-April.  I use tree shelters for the red oak I'm promoting.  It's worked for 25 years.  I try to do 2-3 acres of TSI in December to create winter browse for deer, promote good tree growth and downed trees do provide sites for future natural  seedlings to grow.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{PETER IS VERY KNOWLEDGABLE}\\
+\midrule
+\addlinespace
+Woodland owner & Lived the preaentation of scenerios.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Peter is well informed. He kept the presentation flowing and interesting and}\\
+\midrule
+Woodland owner & I already was aware of all the information presented\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{The information provided was relevant to my goals of sustainable forestry/ wildlife/ habitat enhancement and future grazier.as a woodlot}\\
+\midrule
+\bottomrule
+\end{longtable}
+
+\textbackslash end\{longtable\}
+
+\newpage
+
+\begin{longtable}[t]{l>{\raggedright\arraybackslash}p{10cm}}
+\caption{\label{tab:unnamed-chunk-13}Actions Intended by Survey Respondents as a Result of the Webinar}\\
+\toprule
+\multicolumn{2}{c}{ } \\
+
+\begingroup\fontsize{14}{16}\selectfont \textbf{Perspective}\endgroup & \begingroup\fontsize{14}{16}\selectfont \textbf{Intended Action}\endgroup\\
+\midrule
+\cellcolor{gray!10}{Agency or institution} & \cellcolor{gray!10}{I will share this information with my Agency's Private Lands Management Biologists.}\\
+\midrule
+Agency or institution & I plan in continuing to try to develop managements to address deer impacts to forests\\
+\midrule\\
+\cellcolor{gray!10}{Agency or institution} & \cellcolor{gray!10}{Try to educate participants better on invasive management}\\
+\midrule
+Agency or institution & For me personally in my sugar woods I think I need to utilize chemical treatment of beech whips. For my producers I work with convincing them green leaves on honey suckle and buckthorn are not good habitat.\\
+\midrule\\
+\cellcolor{gray!10}{Agency or institution} & \cellcolor{gray!10}{Identifying forested areas that have the most prevalence of interfering vegetation.}\\
+\midrule
+\addlinespace
+Agency or institution & Continue reading to learn more about the topic.\\
+\midrule\\
+\cellcolor{gray!10}{Educator} & \cellcolor{gray!10}{comment to NHFG  --- too slow to educate broader public and alter rules too slowly - survey shows little public awareness.}\\
+\midrule
+Educator & Educate others\\
+\midrule\\
+\cellcolor{gray!10}{Educator} & \cellcolor{gray!10}{Increase biodiversity.}\\
+\midrule
+Educator & control unwanted vegetation\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Educator} & \cellcolor{gray!10}{Place the links to the four referenced documents on a page I can distribute at SOT Chapter meetings and at MFO visits.}\\
+\midrule
+Educator & As a Master Gardener, Share this information with people that have questions\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{keep sratching my head}\\
+\midrule
+Forester & ./a\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Pass information on to landowners I work with.}\\
+\midrule
+\addlinespace
+Forester & Install deer exclusion fencing in a forested area\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{continue to address vegetation impact of forests}\\
+\midrule
+Forester & look for deer impacts prior to forest management planning\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{serious comment-I will have to learn a lot more about woods a few years after we have used them to control undesirable vegetation. Specifically, I need to be more aware of what was present before, right after goats were done, and then, say, 2-3 years later. We may be changing to a worse vegetation species to control and not know iabout it until much later when it is too late.}\\
+\midrule
+Forester & Deer Exclusion Fencing Trial\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Do a more complete analysis of the invasive issues on my woodlot. Last year I sadly put Newfane, Vermont  on the EAB map as when we logged last winter I stripped the bark off some 4"-8" upper limbs and sure enough under the bark was the telltale "S" shaped curved minings in the cambial layer... However neither of these two infested trees had shown any "blonding."  Each year during all 4 seasons,  I examined my 3 big ash (now down to the last one- 23"dbh, with 4 perfect 10 or 11' veneer bolts}\\
+\midrule
+Forester & Continue to selectively spray herbicides to control herbicides\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Would like to try a Fecon treatment.}\\
+\midrule
+Forester & Iâ€™ll try some modest experiments in silviculture to see what works for me.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{We have a contract with EQIP for 87 acres of understory "brush management", involving chemical treatment of striped maple, hophornbeam, and beech.  The webinar clarified that without protecting desirable regeneration from deer browsing this treatment may be useless, so I will look (again) for a way to finance and implement fencing, tree tubes, or some other method of protecting regeneration from deer browse.}\\
+\midrule
+\addlinespace
+Forester & advise flame weeding where herbicide is not desired or permitted.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{encourage more hunting and invasive species management in Maryland}\\
+\midrule
+Forester & Add some deer management policies in some forest management plans and contemplate some vegetation management procedures.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Improve my client woodlands checklist review}\\
+\midrule
+Forester & discuss long term impact of deer browse with landowners\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{No action contemplated}\\
+\midrule
+Forester & Working on plans that will work better to handle the interference\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{assist in landowner course design for invasive species management in green lie scenarios}\\
+\midrule
+Forester & .\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Integrated vegetation management}\\
+\midrule
+\addlinespace
+Forester & pay attention to estimated deer densities\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Look into different control methods not chemicals}\\
+\midrule
+Forester & Continue to try to educate landowners about the impacts deer and invasive plants have on our forested landscape.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Invasive plants control}\\
+\midrule
+Forester & continue to stress the importance of interfering vegetation\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{I am now retired, so probably no specific actions}\\
+\midrule
+Forester & Forest regeneration planning will be part of our management plans\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{I would like to try a Fecon mower.}\\
+\midrule
+Forester & work harder on invasives\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Integrate what I learn from the webinar when dealing with private property.}\\
+\midrule
+\addlinespace
+Forester & Kill more invasive.\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{Promote slash fences.}\\
+\midrule
+Forester & incorporate material in lessons\\
+\midrule\\
+\cellcolor{gray!10}{Forester} & \cellcolor{gray!10}{herbaceous and woody plant control with propane torch}\\
+\midrule
+Logger / Forest practitioner & slash walls\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Logger / Forest practitioner} & \cellcolor{gray!10}{Slash wall}\\
+\midrule
+NGO & deer fencing\\
+\midrule\\
+\cellcolor{gray!10}{Natural resources specialist} & \cellcolor{gray!10}{Some of techniques will help in my restoration projects}\\
+\midrule
+Natural resources specialist & Explore the accesibility and cost of a forestry mulcher\\
+\midrule\\
+\cellcolor{gray!10}{Natural resources specialist} & \cellcolor{gray!10}{N/A}\\
+\midrule
+\addlinespace
+Natural resources specialist & Incorporate concepts into restoration plans\\
+\midrule\\
+\cellcolor{gray!10}{Natural resources specialist} & \cellcolor{gray!10}{Continue with fern management}\\
+\midrule
+Natural resources specialist & beech control\\
+\midrule\\
+\cellcolor{gray!10}{Natural resources specialist} & \cellcolor{gray!10}{Conduct more research.}\\
+\midrule
+Other (please indicate) & Better educate the community on the significant damage of over deer population.\\
+\midrule
+\addlinespace
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{discuss with Wilson Tuscarora Park some ideas. As park was eminent domained in 60s large area was green ash, EAB damage.}\\
+\midrule
+Other (please indicate) & In \vphantom{2} discussion\\
+\midrule
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{Be more aware of native interfering vegetation when I see forests}\\
+\midrule
+Other (please indicate) & Provide community outreach about deer impacts on city forests and incorporate the "Green Lie" into discussion\\
+\midrule
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{In \vphantom{1} discussion}\\
+\midrule
+\addlinespace
+Other (please indicate) & I now have a better understanding of the importance of the slash walls the park had built and the effect of the deer with the understory.\\
+\midrule
+\cellcolor{gray!10}{Other (please indicate)} & \cellcolor{gray!10}{In discussion}\\
+\midrule
+Other (please indicate) & Deer Management is a very big issue in our area so learning new strategies is always good\\
+\midrule
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{become more frustrated! Shoot more deer.}\\
+\midrule
+Woodland owner & Address next woodlot cutting\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Designate fern heavy area to eradicate via fencing and planting non invasive buses and trees}\\
+\midrule
+Woodland owner & Try to employ broadcast mechanical method first, in order to eliminate invasive thorn bushes in small part of land.  Reluctant to use herbicides.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Increase selective removal of invasives in my relatively small woodlot; barberry, multiflora, bittersweet, especially; stiltgrass on borders}\\
+\midrule
+Woodland owner & Attend RIFCO's 5 year slash wall review.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{I won't plant any trees until I can build deer exclusion areas!}\\
+\midrule
+\addlinespace
+Woodland owner & More effectively control invasives\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Evaluate several woodlots for the potential benefit of change.}\\
+\midrule
+Woodland owner & Try to get rid of Hayscented ferns  by excluding deer.\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{plant and protect higher grade trees with fencing which I do now when planting trees on our property.}\\
+\midrule
+Woodland owner & I have reached out to a DEC forester for a review and prescription for the various stands on the property. I will be going out and pulling honeysuckle along the paths this month while putting a more comprehensive plan together.\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{kill ferns and plant protected trees.  Can't do much to control deer, regrettably.}\\
+\midrule
+Woodland owner & Learn more about using slash walls for deer exclusion on my land\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{more intensively consider deer exclosure fencing for an area of our forest}\\
+\midrule
+Woodland owner & investigate flame weeding buckthorn\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Treat invasive plants with herbicides}\\
+\midrule
+\addlinespace
+Woodland owner & increase use of herbicide\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Will continue to discuss with my forester ways to manage for invasives and deer.}\\
+\midrule
+Woodland owner & Go after buckthorn\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Significant invasive and interfering vegetation control efforts this year, but those were already planned.}\\
+\midrule
+Woodland owner & Target Multi Flora Rosa while itâ€™s still minimal.\\
+\midrule\\
+\addlinespace
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{install several fenced test plots to guage deer impacts}\\
+\midrule
+Woodland owner & occlusion methods for buckthorn\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Continue planting and protecting individual trees}\\
+\midrule
+Woodland owner & dig and pull plants plus brush hog where I can with invasive plants and more serious eliminating more does\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{Some tree planting in forest clearings}\\
+\midrule
+\addlinespace
+Woodland owner & LOOK INTO FENCING\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{I want to go through my wood throughly this year and identify any potential invasives and formulate a good plan for their removal}\\
+\midrule
+Woodland owner & Set up protective perimeter for new trees\\
+\midrule\\
+\cellcolor{gray!10}{Woodland owner} & \cellcolor{gray!10}{I have already contacted my local NRCS to update my forestry management plan and apply for technical assistance related to habitat/ stewardship goals on my property.}\\
+\midrule
+\bottomrule
+\end{longtable}
+
+\end{document}

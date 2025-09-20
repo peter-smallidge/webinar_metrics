@@ -1,0 +1,58 @@
+"0","input_qualtrics <- read_excel(file_path_qualtrics, sheet = ""Sheet1"", skip = 0) %>% 
+    select(perspective, state, acres, awareness, knowledge, action, general_comment,
+           webinar_freq, workshop_freq, topics, logistics, questions, miles, dollars) %>% 
+    mutate(acres = str_remove_all(acres, ""[,\\+ ]"")) %>% #removes those characters from the acres variable
+    mutate(acres = if_else(
+        str_detect(acres, ""-""),
+        str_extract(acres, ""(?<=-)[0-9]+""),  # Extract the number after the hyphen
+        acres
+  )) %>% 
+    mutate(miles = str_remove_all(miles, ""[,\\+ ]"")) %>% #removes those characters from the miles variable
+    mutate(miles = if_else(
+        str_detect(miles, ""-""),
+        str_extract(miles, ""(?<=-)[0-9]+""),  # Extract the number after the hyphen
+        miles
+  )) %>% 
+    mutate(dollars = str_remove_all(dollars, ""[,\\+ ]"")) %>% #removes those characters from the dollars variable
+    mutate(dollars = if_else(
+        str_detect(dollars, ""-""),
+        str_extract(dollars, ""(?<=-)[0-9]+""),  # Extract the number after the hyphen
+        dollars
+  )) %>% 
+    mutate(
+        acres = as.numeric(acres),
+        miles = as.numeric(miles),
+        dollars = as.numeric(dollars)
+        ) %>% 
+    mutate(awareness = fct_recode(awareness,
+                                  ""abstain"" = ""Abstain (N/A)"",
+                                  ""high"" = ""High degree of change"",
+                                  ""mod_high"" = ""4"",
+                                  ""moderate"" = ""Moderate degree of change"",
+                                  ""min_mod"" = ""2"",
+                                  ""minimal"" = ""Minimal degree of change"")
+           ) %>% 
+     mutate(knowledge = fct_recode(knowledge,
+                                  ""abstain"" = ""Abstain (N/A)"",
+                                  ""high"" = ""High degree of change"",
+                                  ""mod_high"" = ""4"",
+                                  ""moderate"" = ""Moderate degree of change"",
+                                  ""min_mod"" = ""2"",
+                                  ""minimal"" = ""Minimal degree of change"")
+           )
+"
+"2","Warning :[38;5;232mThere was 1 warning in `mutate()`.[39m
+[38;5;232m[36mℹ[38;5;232m In argument: `dollars = as.numeric(dollars)`.[39m
+Caused by warning:
+[33m![39m NAs introduced by coercion
+"
+"2","Warning :[38;5;232mThere was 1 warning in `mutate()`.[39m
+[38;5;232m[36mℹ[38;5;232m In argument: `awareness = fct_recode(...)`.[39m
+Caused by warning:
+[33m![39m Unknown levels in `f`: Abstain (N/A)
+"
+"2","Warning :[38;5;232mThere was 1 warning in `mutate()`.[39m
+[38;5;232m[36mℹ[38;5;232m In argument: `knowledge = fct_recode(...)`.[39m
+Caused by warning:
+[33m![39m Unknown levels in `f`: Abstain (N/A), 4, 2
+"

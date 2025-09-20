@@ -1,0 +1,47 @@
+knitr::opts_chunk$set(echo = TRUE)
+file_path_zoom <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2024.data.attend.exit\2024_09_18_Whitmore_HWA.xlsx"
+library(readxl)
+library(readxl)
+library(readr)
+#library(skimr)
+library(tidyr)
+library(tidyverse)
+#library(tidytable)  ## CAUTION this may conflict with dplyr functions
+library(ggplot2)
+library(ggpubr)
+library(dplyr)
+file_path_zoom <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2024.data.attend.exit\2024_09_18_Whitmore_HWA.xlsx"
+file_path_zoom <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_09_18_Whitmore_HWA.xlsx"
+input <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=10)
+View(input)
+input <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=10)
+input <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=10) %>%
+mutate(acres = str_remove_all(acres, "[,\\+ ]"))
+input <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=10) %>%
+mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres varaible
+mutate(acres = if_else(
+str_detect(acres, "-"),
+str_extract(acres, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
+acres
+))
+# create a worksheet that is cleaned with the following features
+# a. name the worksheet "full_cleaned". Manually condense users with multiple entries.
+# b. retain attended and those who didn't attend
+# c. remove the day/month/year (or see the code for "str_remove")
+# d. use these as variables: attended	user	first	last	email	country	postal
+#       state	join	leave	duration	perspective	ceu	acres	notifications
+# e. paste the variable from step "d" into row 11.
+file_path_zoom <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_09_18_Whitmore_HWA.xlsx"
+file_path_qualtrics <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_09_18_Whitmore_HWA_qualtrics.xlsx"
+webinar_name <- "2024_09_18_Whitmore_HWA"
+input <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=10) %>%
+mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres varaible
+mutate(acres = if_else(
+str_detect(acres, "-"),
+str_extract(acres, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
+acres
+)) %>%
+mutate(join = str_remove(join, "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b")) %>%
+mutate(leave = str_remove(leave, "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b"))
+input_qualtrics <- read_excel(file_path_qualtrics, sheet = 1, skip = 10)
+View(input_qualtrics)

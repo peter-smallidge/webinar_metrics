@@ -20,7 +20,7 @@ knitr::opts_chunk$set(warning = FALSE)
 <!-- This is a hidden comment that won't print in Knitr for Rmarkdown -->
 
 
-
+<!-- Activate the libraries -->
 ```{r echo=FALSE}
 library(readxl)
 library(readr)
@@ -51,20 +51,22 @@ library(webshot2)
 ```
 
 
-
+<!-- Instructions to configure the excel files from zoom and qualtrics -->
 ```{r echo = FALSE}
 # INSTRUCTIONS
 # 
 # create a worksheet FROM THE ZOOM OUTPUT that is cleaned with the following features
-# a. name the worksheet "full_cleaned" for attendee data and "registration" for registration data. Manually condense users with multiple    #    entries. (note 6/19/2025 - it isn't clear why I need a separate file for "registration". That data is duplicative with 
+# a. name the worksheet "full_cleaned" for attendee data and "registration" for registration data. 
+# Manually condense users with multiple    #    entries. 
+# (note 6/19/2025 - it isn't clear why I need a separate file for "registration". That data is duplicative with 
 #     "full_cleaned" if the variable "attended" (yes/no) is included.)
 
 # b. retain attended and those who didn't attend
 
-# c. remove the day/month/year from "join time" and "leave time" column of the excel file (or see the code for "str_remove")
+# c. select the join and leave columns. Right click and make the column type "numeric" with 8 decimal places.
 
 
-# d. (revised 6/19/2025) attended name first last email postal state join leave duration perspective ceu acres notification
+# d. (revised 6/19/2025) column names: attended name first last email postal state join leave duration perspective ceu acres notification
 #       the sheet "full_cleaned" includes the column attended with "yes and no". The df-input_zoom is constructed to include 
 #       the variables in the format presented from zoom into excel.
 
@@ -78,13 +80,16 @@ library(webshot2)
 ```
 
 
+
+
+<!-- Create the pathways to input and export datafiles -->
 ```{r echo = FALSE}
 # Create Paths
 #in the console, type:   file.choose(), select the file, and then paste the path into the code below.
 
 # file_path_registration <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interferencep\\2025_may_21_registration.xlsx"
 
-file_path_zoom <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_09_17_slash_wall_research\attendee_slash_wall_research_17sept2025.xlsx"
+file_path_zoom <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_09_17_slash_wall_research\\attendee_slash_wall_research_17sept2025.xlsx"
 
 
 file_path_qualtrics <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_09_17_slash_wall_research\\2025_09_17_qualtrics.xlsx"
@@ -95,23 +100,63 @@ output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/w
 
 ```
 
+
+
+
+
 <!-- Read Data from Zoom and Qualtrics -->
 ```{r  echo = FALSE}
 # Read Data from 1 Zoom files and Qualtrics
 
+#run this function before the "input_zoom" chunk to make the data right
+# Function to convert Excel time decimal to time string
+# IMPORTANT: In Excel, right click the join and leave columns, change format to numeric with 8 decimal places
+excel_time_to_time <- function(x) {
+  # Convert to numeric if not already
+  x <- as.numeric(x)
+  
+  # Get just the decimal part (time portion)
+  time_decimal <- x - floor(x)
+  
+  # Convert to seconds since midnight
+  seconds <- time_decimal * 86400
+  
+  # Convert to hours and minutes
+  hours <- floor(seconds / 3600)
+  minutes <- floor((seconds %% 3600) / 60)
+  
+  # Use ifelse for vectorized operations
+  ifelse(hours == 0, sprintf("12:%02d AM", minutes),
+  ifelse(hours < 12, sprintf("%d:%02d AM", hours, minutes),
+  ifelse(hours == 12, sprintf("12:%02d PM", minutes),
+         sprintf("%d:%02d PM", hours - 12, minutes))))
+}
+
 
 input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
- mutate(
-    join = ifelse(
-      !is.na(join),
-      format(parse_date_time(join, orders = "I:M:S p"), "%I:%M %p"),
-      NA
-    ),
-    leave = ifelse(
-      !is.na(leave),
-      format(parse_date_time(leave, orders = "I:M:S p"), "%I:%M %p"),
-      NA
-    )) %>% 
+  filter(!(duration=="x")) %>% 
+  select(-delete1, -delete2) %>% 
+
+    mutate(
+    join  = as.numeric(join),   # Convert to numeric first
+    leave = as.numeric(leave)   # Convert to numeric first
+  ) %>%
+    
+  mutate(
+    join  = excel_time_to_time(join),
+    leave = excel_time_to_time(leave)
+  ) %>% 
+    
+  #     mutate(
+  #   join  = as.POSIXct((as.numeric(join) * 86400), origin = "1899-12-30", tz = "America/New_York"),
+  #   leave = as.POSIXct((as.numeric(leave) * 86400), origin = "1899-12-30", tz = "America/New_York")
+  # ) %>%
+  # mutate(
+  #   join  = format(join, "%I:%M %p"),
+  #   leave = format(leave, "%I:%M %p")
+  # ) %>% 
+          
+          
   mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% 
     #removes those characters from the acres varaible
   mutate(acres = if_else(
@@ -119,17 +164,20 @@ input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
         str_extract(acres, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
         acres
   )) %>% 
-  mutate(
-        acres = as.numeric(acres)
-    ) %>% 
+ 
   mutate(across(everything(), ~ gsub("%", "\\\\%", .x))) %>%
   mutate(across(everything(), ~ gsub("&", "\\\\&", .x))) %>%
   mutate(across(everything(), ~ gsub("#", "\\\\#", .x))) %>% 
   mutate(across(everything(), ~ gsub("_", "\\\\_", .x))) %>%
-  mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x)))
+  mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x))) %>% 
+
+  mutate(
+        acres = as.numeric(acres),
+        duration = as.numeric(duration)
+    )
 
 
-input_qualtrics <- read_excel(file_path_qualtrics, sheet = "Sheet1", skip = 0) %>% 
+input_qualtrics <- read_excel(file_path_qualtrics, sheet = "2025_09_slash_wall_research_Sep", skip = 8) %>% 
     select(perspective, state, acres, awareness, knowledge, action, general_comment,
            webinar_freq, workshop_freq, topics, logistics, questions, miles, dollars) %>% 
     mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres variable
@@ -185,21 +233,12 @@ input_qualtrics <- input_qualtrics %>%
         dollars = as.numeric(dollars)
     )
 
-# input_zoom <- left_join(input_attendee, input_registration, by = "email") %>% 
-#     select(email, name, first, last, join, leave, duration, zip, state, perspective, ceu, acres, notifications) %>% 
-#     rename(
-#         postal = zip
-#     ) %>% 
-#     mutate(
-#         attended = "yes",
-#         acres = as.numeric(acres)
-#     )
 
 ```
 
 
 
-<!-- Create data file to paste into CEU documentation -->
+<!-- #CEU Database Create data file to paste into CEU documentation -->
 ```{r echo = FALSE }
 # Create data file to paste into CEU documentation
 
@@ -228,8 +267,8 @@ write_xlsx(CEU_1, output_file_ceu)
 
 
 listserve <- input_zoom %>% 
-    select(first, last, email, notifications) %>% 
-    filter(str_detect(notifications, "please add me")) %>% 
+    select(first, last, email, notification) %>% 
+    filter(str_detect(notification, "please add me")) %>% 
     mutate(full = paste(first, last, sep = " ")) %>% 
     select(email, full) %>% 
     rename(
@@ -280,12 +319,13 @@ missing_perspectives <- data.frame(
 )
 
 #determine total number of attended
+# (22sept2025 - check df=input_zoom if attended is yes or Yes)
 total_attended <- input_zoom %>% 
-  filter(attended == "yes") %>% 
+  filter(attended == "Yes") %>% 
   nrow()
 
 summ_perspective1 <- input_zoom %>% 
-  filter(attended == "yes") %>%  # Keep only those who attended
+  filter(attended == "Yes") %>%  # Keep only those who attended
   group_by(perspective) %>%
   summarize(count_attended = n()) %>%
   mutate(
@@ -406,6 +446,28 @@ write_xlsx(summary_page, output_file_summary)
 
 
 ```
+
+#code to dump the DF as excel and as pdf
+```{r eval=FALSE echo=FALSE}
+# Excel export (you already have this)
+write_xlsx(summary_page, output_file_summary)
+
+# PDF export (simple table snapshot)
+library(gridExtra)
+library(ggplot2)
+
+# Construct a matching PDF filename
+output_file_summary_pdf <- sub("\\.xlsx$", ".pdf", output_file_summary)
+
+# Convert dataframe to a table grob
+table <- tableGrob(summary_page)
+
+# Save as PDF
+ggsave(output_file_summary_pdf, table, width = 8.5, height = 11)
+
+```
+
+
 
 
 <!-- Create summary of actions intended -->

@@ -1,6 +1,6 @@
 ---
 title: "Analysis of ForestConnect Webinar"
-author: "Soil Carbon in Silvopasture, by Joseph Orefice 17 December 2025"
+author: "An Introduction to Northeastern Forest Pathology, by Nicholas Brazee 18 March 2026"
 date: "`r Sys.Date()`"
 always_allow_html: true
 output:
@@ -53,50 +53,46 @@ library(webshot2)
 
 <!-- Instructions to configure the excel files from zoom and qualtrics -->
 ```{r echo = FALSE}
+#   the path for the datafile
+#   "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2026.data.attend.exit\\2026_03_forest_pathology_Brazee\\2026_03_forest_pathology_data.xlsx"
+
 # INSTRUCTIONS
 # 
-# create a worksheet FROM THE ZOOM OUTPUT that is cleaned with the following features
-# a. name the worksheet "full_cleaned" for attendee data and "registration" for registration data. 
-# Manually condense users with multiple entries. 
-# (note 6/19/2025 - it isn't clear why I need a separate file for "registration". That data is duplicative with 
-#     "full_cleaned" if the variable "attended" (yes/no) is included.)
+# create 3 worksheets in one excel file for registration, attendance, and qualtrics data.
+# a. name the worksheets with the data that is cleaned for R as "registration", "attended" and "qualtrics"
+#
+
+# (note 1/28/2026 - the new format for zoom output is a file of registration data including the custom registration questions
+#  and a separate file for attended/participation.)
 
 # b. retain attended and those who didn't attend
 
-# c. select the join and leave columns. Right click and make the column type "numeric" with 8 decimal places.
+# c. select the join and leave columns. The date should have been removed. Right click and make the columns type "numeric" with 8 decimal places.
+
+# d. (revised 6/19/2025) 
+#   "registration column names at row 10: 
+#   "attended" column names at row 10: attended name email  join leave duration
+#   "qualtrics" column names at row 10:responded	perspective	perspective_other	viewing	state	acres	awareness	knowledge	action	general_comment	webinar_freq	workshop_freq	topics	logistics	logistics_other	questions	miles	dollars
 
 
-# d. (revised 6/19/2025) column names: attended name first last email postal state join leave duration perspective ceu acres notification
-#       the sheet "full_cleaned" includes the column attended with "yes and no". The df-input_zoom is constructed to include 
-#       the variables in the format presented from zoom into excel.
-
-# e. paste the variable from step "d" into row 11.
- 
-# create a worksheet FROM THE QUALTRICS OUTPUT that is named "survey_cleaned"
-# f. past these variables into row 10 of the qualtrics file
-#     responded	perspective	perspective_other	viewing	state	acres	awareness	knowledge	
-#     action	general_comment	webinar_freq	workshop_freq	topics	
-#     logistics	logistics_other	questions	miles	dollars
 ```
-
-
-
 
 <!-- Create the pathways to input and export datafiles -->
 ```{r echo = FALSE}
 # Create Paths
 #in the console, type:   file.choose(), select the file, and then paste the path into the code below.
 
-# file_path_registration <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interferencep\\2025_may_21_registration.xlsx"
+#
+#
 
-file_path_zoom <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_12_17_soil_carbon_Orefice\attendee_soil_carbon_2025_12_17.xlsx"
-
-file_path_qualtrics <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_12_17_soil_carbon_Orefice\qualtrics_soil_carbon_2025_12_17.xlsx"
+file_path_data <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2026.data.attend.exit\\2026_03_forest_pathology_Brazee\\2026_03_forest_pathology_data.xlsx"
 
 
-webinar_name <- "2025_12_17_Silvopasture_Soil_Carbon_Orefice" 
+webinar_name <- "2026_Mar_18_Intro_NE_Forest_Pathology_N.Brazee"
 
-output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_09_17_slash_wall_research"
+output_folder <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2026.data.attend.exit\\2026_03_forest_pathology_Brazee"
+
+
 
 ```
 
@@ -106,11 +102,11 @@ output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/w
 
 <!-- Read Data from Zoom and Qualtrics -->
 ```{r  echo = FALSE}
-# Read Data from 1 Zoom files and Qualtrics
+# Read Data from 1 Zoom file and 1 Qualtrics file
 
 #run this function before the "input_zoom" chunk to make the data right
 # Function to convert Excel time decimal to time string
-# IMPORTANT: In Excel, right click the join and leave columns, change format to numeric with 8 decimal places
+# IMPORTANT: In Excel, delete the date (m/dd/yyyy), then right click the join and leave columns, change format to numeric with 8 decimal places
 excel_time_to_time <- function(x) {
   # Convert to numeric if not already
   x <- as.numeric(x)
@@ -133,30 +129,20 @@ excel_time_to_time <- function(x) {
 }
 
 
-input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
+input_zoom_attend <- read_excel(file_path_data, sheet = "attended", skip = 9) %>%
   filter(!(duration=="x")) %>% 
-  select(-delete1, -delete2) %>% 
-
     mutate(
-    join  = as.numeric(join),   # Convert to numeric first
-    leave = as.numeric(leave)   # Convert to numeric first
-  ) %>%
+        email = tolower(email),
+        attended = "yes"
+        )
+
+input_zoom_register<- read_excel(file_path_data, sheet = "registration", skip = 9) %>% 
+mutate(email = tolower(email))
+
+input_zoom <- full_join(input_zoom_register, input_zoom_attend, by = ("email")) %>% 
+    select(attended, first, last, name, email,perspective, state, postal, join, leave, duration,
+           acres, ceu, notification) %>% 
     
-  mutate(
-    join  = excel_time_to_time(join),
-    leave = excel_time_to_time(leave)
-  ) %>% 
-    
-  #     mutate(
-  #   join  = as.POSIXct((as.numeric(join) * 86400), origin = "1899-12-30", tz = "America/New_York"),
-  #   leave = as.POSIXct((as.numeric(leave) * 86400), origin = "1899-12-30", tz = "America/New_York")
-  # ) %>%
-  # mutate(
-  #   join  = format(join, "%I:%M %p"),
-  #   leave = format(leave, "%I:%M %p")
-  # ) %>% 
-          
-          
   mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% 
     #removes those characters from the acres varaible
   mutate(acres = if_else(
@@ -171,13 +157,19 @@ input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
   mutate(across(everything(), ~ gsub("_", "\\\\_", .x))) %>%
   mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x))) %>% 
 
+  
+    
   mutate(
         acres = as.numeric(acres),
         duration = as.numeric(duration)
-    )
+    ) %>% 
+ mutate(acres = replace_na(acres, 0))
 
 
-input_qualtrics <- read_excel(file_path_qualtrics, sheet = "survey_cleaned", skip = 9) %>% 
+#variables include: attend, name, email, join, leave, duration
+
+
+input_qualtrics <- read_excel(file_path_data, sheet = "qualtrics", skip = 9) %>% 
     select(perspective, state, acres, awareness, knowledge, action, general_comment,
            webinar_freq, workshop_freq, topics, logistics, questions, miles, dollars) %>% 
     mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres variable
@@ -321,11 +313,11 @@ missing_perspectives <- data.frame(
 #determine total number of attended
 # (22sept2025 - check df=input_zoom if attended is yes or Yes)
 total_attended <- input_zoom %>% 
-  filter(attended == "Yes") %>% 
+  filter(attended == "Yes" | attended == "yes") %>% 
   nrow()
 
 summ_perspective1 <- input_zoom %>% 
-  filter(attended == "Yes") %>%  # Keep only those who attended
+  filter(attended == "Yes" | attended == "yes") %>%  # Keep only those who attended
   group_by(perspective) %>%
   summarize(count_attended = n()) %>%
   mutate(
@@ -364,7 +356,7 @@ summ_ceu <- CEU_1 %>%
         sequence = c("W")
     )
     
-
+valid_levels <- c("high", "mod_high", "moderate", "min_mod", "minimal")
 
 exit_metrics <- input_qualtrics %>%
     select(perspective, acres, awareness, knowledge, action, general_comment, miles, dollars) %>% 
@@ -375,12 +367,23 @@ exit_metrics <- input_qualtrics %>%
         Action_intended_count = sum(!is.na(action)),
         Action_pct = (Action_intended_count / Survey_respondents) * 100,
         Financial_impact = sum(dollars, na.rm = TRUE),
-        Awareness_pct = sum(awareness %in% c("high", "mod_high", "moderate")) / 
-            sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100,
-        Knowledge_pct = sum(knowledge %in% c("high", "mod_high", "moderate")) / 
-            sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100
+
+        Awareness_pct =
+            sum(awareness %in% c("high", "mod_high", "moderate"), na.rm = TRUE) /
+            sum(awareness %in% valid_levels, na.rm = TRUE) * 100,
+
+        Knowledge_pct =
+            sum(knowledge %in% c("high", "mod_high", "moderate"), na.rm = TRUE) /
+            sum(knowledge %in% valid_levels, na.rm = TRUE) * 100
+
+        # Awareness_pct = sum(awareness %in% c("high", "mod_high", "moderate")) / 
+        #     sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100,
+        # Knowledge_pct = sum(knowledge %in% c("high", "mod_high", "moderate")) / 
+        #     sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100
     ) %>% 
-    mutate_if(is.numeric, round, 0) %>% 
+
+    
+        mutate_if(is.numeric, round, 0) %>% 
     mutate(
         acres_qualtrics = scales::comma(acres_qualtrics),
         Miles_equivalent = scales::comma(Miles_equivalent),
@@ -399,6 +402,7 @@ exit_metrics <- input_qualtrics %>%
     mutate(
         sequence = c("C", "E", "U", "Q", "R", "V", "S", "T")
     )
+
 ```
 
 
@@ -446,6 +450,78 @@ write_xlsx(summary_page, output_file_summary)
 
 
 ```
+
+```{r}
+# code to produce a frequency histogram of states and another of acreage
+#
+
+library(dplyr)
+library(ggplot2)
+
+# Create state frequency distribution
+state_freq <- input_zoom %>%
+  count(state) %>%
+  arrange(state)
+
+# Create state bar chart
+# state_plot <- ggplot(state_freq, aes(x = state, y = n)) +
+#   geom_bar(stat = "identity", fill = "steelblue") +
+#   theme_minimal() +
+#   labs(title = "Frequency Distribution by State",
+#        x = "State",
+#        y = "Count") +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# (chatgpt 3/25/2025)
+state_plot <- state_freq %>%
+  filter(!is.na(state)) %>%
+  ggplot(aes(x = reorder(state, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = n), hjust = -0.1, size = 2) +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Frequency by State",
+       x = "State",
+       y = "Count")
+
+# Save state plot
+ggsave(filename = file.path(output_folder, "state_frequency.jpg"),
+       plot = state_plot,
+       width = 5.5,
+       height = 7,
+       dpi = 300)
+
+# Create acres frequency distribution
+acres_freq <- input_zoom %>%
+  mutate(acres_bracket = cut(acres,
+                              breaks = c(-Inf, 0, 50, 100, 250, 500, 1000, 10000, 100000, 1000000, Inf),
+                              labels = c("0", "1-50", "51-100", "101-250", "251-500", 
+                                        "501-1,000", "1,001-10,000", "10,001-100,000", 
+                                        "100,001-1,000,000", ">1,000,000"),
+                              right = TRUE,
+                              include.lowest = TRUE)) %>%
+  count(acres_bracket) %>%
+  drop_na()
+
+# Create acres bar chart
+acres_plot <- ggplot(acres_freq, aes(x = acres_bracket, y = n)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  theme_minimal() +
+  labs(title = "Acreage Frequency",
+       x = "Acres Bracket",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Save acres plot
+ggsave(filename = file.path(output_folder, "acres_frequency.jpg"),
+       plot = acres_plot,
+       width = 3,
+       height = 4.5,
+       dpi = 300)
+
+```
+
+
 
 #code to dump the DF as excel and as pdf
 ```{r eval=FALSE echo=FALSE}
@@ -508,7 +584,7 @@ general <- input_qualtrics %>%
 
 ```
 
-[webinar archived at] https://youtu.be/wdK4WfuI-9c
+[webinar archived at] https://youtu.be/toMEXnfJHc8
 <!-- Create summary of General Comments -->
 
 
@@ -548,7 +624,10 @@ escape_latex_chars <- function(df) {
 
 summary_page_clean <- escape_latex_chars(summary_page)  
 
-summary_table <- kable(summary_page_clean, caption = "Summary of Webinar Metrics") %>%
+summary_table <- kable(
+  summary_page_clean,
+  caption = paste("Webinar Summary:", webinar_name)
+) %>%
   kable_styling(full_width = FALSE, position = "center", 
                 latex_options = c("striped", "hold_position")) %>%
   #add_header_above(c(" " = 2)) %>%   # Add space to header if needed

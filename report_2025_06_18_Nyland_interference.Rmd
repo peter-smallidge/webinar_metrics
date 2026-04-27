@@ -1,6 +1,6 @@
 ---
 title: "Analysis of ForestConnect Webinar"
-author: "Collecting Sap from Trees Other than Maple, by David Moore May 21, 2025"
+author: "Sad Saga - When Interference Returns (Nyland) June 2025"
 date: "`r Sys.Date()`"
 always_allow_html: true
 output:
@@ -89,32 +89,70 @@ library(webshot2)
 file_path_zoom <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interference\\2025_06_nyland_interference_raw.xlsx"
 
 
-file_path_qualtrics <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interference\\2025_05_21_qualtrics.xlsx"
+# file_path_qualtrics <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interference\\2025_05_21_qualtrics.xlsx"
 
 webinar_name <- "2025_06_19_Nyland_interference" 
 
 output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_06_19_Nyland_interference"
 
 ```
+```{r}
+#run this function before the "input_zoom" chunk to make the data right
+# Function to convert Excel time decimal to time string
+# IMPORTANT: In Excel, delete the date (m/dd/yyyy), then right click the join and leave columns, change format to numeric with 8 decimal places
+excel_time_to_time <- function(x) {
+  # Convert to numeric if not already
+  x <- as.numeric(x)
+  
+  # Get just the decimal part (time portion)
+  time_decimal <- x - floor(x)
+  
+  # Convert to seconds since midnight
+  seconds <- time_decimal * 86400
+  
+  # Convert to hours and minutes
+  hours <- floor(seconds / 3600)
+  minutes <- floor((seconds %% 3600) / 60)
+  
+  # Use ifelse for vectorized operations
+  ifelse(hours == 0, sprintf("12:%02d AM", minutes),
+  ifelse(hours < 12, sprintf("%d:%02d AM", hours, minutes),
+  ifelse(hours == 12, sprintf("12:%02d PM", minutes),
+         sprintf("%d:%02d PM", hours - 12, minutes))))
+}
+
+
+```
+
+
+
 
 <!-- Read Data from Zoom and Qualtrics -->
 ```{r  echo = FALSE}
 # Read Data from 1 Zoom files and Qualtrics
 
+input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 9) %>%
+   filter(!(duration=="x")) %>% 
+    mutate(email = tolower(email)) %>% 
+    mutate(
+        duration = as.numeric(duration)
+    ) %>% 
 
-input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
- mutate(
-    join = ifelse(
-      !is.na(join),
-      format(parse_date_time(join, orders = "I:M:S p"), "%I:%M %p"),
-      NA
-    ),
-    leave = ifelse(
-      !is.na(leave),
-      format(parse_date_time(leave, orders = "I:M:S p"), "%I:%M %p"),
-      NA
-    )) %>% 
-  mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% 
+    
+    # mutate(
+    # join = ifelse(
+    #   !is.na(join),
+    #   format(parse_date_time(join, orders = "I:M:S p"), "%I:%M %p"),
+    #   NA
+    # ),
+    # leave = ifelse(
+    #   !is.na(leave),
+    #   format(parse_date_time(leave, orders = "I:M:S p"), "%I:%M %p"),
+    #   NA
+    # )) %>% 
+ 
+    
+     mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% 
     #removes those characters from the acres varaible
   mutate(acres = if_else(
         str_detect(acres, "-"),
@@ -122,7 +160,8 @@ input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
         acres
   )) %>% 
   mutate(
-        acres = as.numeric(acres)
+        acres = as.numeric(acres),
+        duration = as.numeric(duration)
     ) %>% 
   mutate(across(everything(), ~ gsub("%", "\\\\%", .x))) %>%
   mutate(across(everything(), ~ gsub("&", "\\\\&", .x))) %>%
@@ -131,23 +170,7 @@ input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
   mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x)))
 
  
-
-# 
-#  input_attendee <- read_excel(file_path_attendee, sheet = "full_cleaned", skip = 0) %>%
-  # mutate(join = format(join, "%H:%M")) %>%
-  # mutate(leave = format(leave, "%H:%M"))
-    
-
-  
-   
-# input_zoom <- input_zoom %>%
-#   mutate(across(everything(), ~ gsub("%", "\\\\%", .x))) %>%
-#   mutate(across(everything(), ~ gsub("&", "\\\\&", .x))) %>%
-#   mutate(across(everything(), ~ gsub("#", "\\\\#", .x))) %>% 
-#   mutate(across(everything(), ~ gsub("_", "\\\\_", .x))) %>%
-#   mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x))) %>% 
-
-input_qualtrics <- read_excel(file_path_qualtrics, sheet = "Sheet1", skip = 0) %>% 
+input_qualtrics <- read_excel(file_path_zoom, sheet = "qualtrics", skip = 9) %>% 
     select(perspective, state, acres, awareness, knowledge, action, general_comment,
            webinar_freq, workshop_freq, topics, logistics, questions, miles, dollars) %>% 
     mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres variable
@@ -203,15 +226,6 @@ input_qualtrics <- input_qualtrics %>%
         dollars = as.numeric(dollars)
     )
 
-# input_zoom <- left_join(input_attendee, input_registration, by = "email") %>% 
-#     select(email, name, first, last, join, leave, duration, zip, state, perspective, ceu, acres, notifications) %>% 
-#     rename(
-#         postal = zip
-#     ) %>% 
-#     mutate(
-#         attended = "yes",
-#         acres = as.numeric(acres)
-#     )
 
 ```
 
@@ -270,6 +284,10 @@ write_csv(listserve, output_file_listserve)
 
 summ_partic <- input_zoom %>% 
     select(state, duration, perspective, acres) %>% 
+    mutate(
+        duration = as.numeric(duration),
+        acres = as.numeric(acres)
+    ) %>% 
     summarize(
         Registered = n(),
         Participants_gtr20min = sum(duration > 19, na.rm = TRUE),
@@ -299,11 +317,11 @@ missing_perspectives <- data.frame(
 
 #determine total number of attended
 total_attended <- input_zoom %>% 
-  filter(attended == "yes") %>% 
+  filter(attended == "yes" | attended == "Yes") %>%  # Keep only those who attended
   nrow()
 
 summ_perspective1 <- input_zoom %>% 
-  filter(attended == "yes") %>%  # Keep only those who attended
+  filter(attended == "yes" | attended == "Yes") %>%  # Keep only those who attended
   group_by(perspective) %>%
   summarize(count_attended = n()) %>%
   mutate(
@@ -464,7 +482,7 @@ general <- input_qualtrics %>%
 
 ```
 
-[webinar archived at] https://youtu.be/wdK4WfuI-9c
+[webinar archived at] https://youtu.be/LObOw4VN0nk
 <!-- Create summary of General Comments -->
 
 

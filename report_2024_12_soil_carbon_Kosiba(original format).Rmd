@@ -1,14 +1,11 @@
 ---
 title: "Analysis of ForestConnect Webinar"
-author: "Soil Carbon in Silvopasture, by Joseph Orefice 17 December 2025"
+author: "Ecology and Management of Soil Carbon. Ali Kosiba. December 18 2024"
 date: "`r Sys.Date()`"
-always_allow_html: true
-output:
-  pdf_document: default
-  word_document: default
+output: pdf_document
 knitr:
-  opts_chunk:
-    echo: false
+  opts_chunk: 
+    echo: FALSE
 ---
 
 ```{r setup, include=FALSE}
@@ -19,8 +16,28 @@ knitr::opts_chunk$set(warning = FALSE)
 
 <!-- This is a hidden comment that won't print in Knitr for Rmarkdown -->
 
+```{r echo = FALSE}
 
-<!-- Activate the libraries -->
+
+# ## R Markdown
+# 
+# This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# 
+# When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+    
+```
+
+
+```{r echo = FALSE}
+
+
+```
+
+
+
 ```{r echo=FALSE}
 library(readxl)
 library(readr)
@@ -34,8 +51,6 @@ library(dplyr)
 #install.packages("writexl")
 library(writexl)
 library(scales)
-#install.packages(lubridate)
-library(lubridate)
 
 #tinytex::install_tinytex()
 #install.packages("tinytex")
@@ -44,35 +59,20 @@ library(tinytex)
 #install.packages("kableExtra")
 library(kableExtra)
 
-#install.packages("webshot2")
-library(webshot2)
-
 #install.packages("rmarkdown")
 ```
 
+#  "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2024.data.attend.exit\2024_12_soil_carbon_Kosiba\2024_12_18_Kosiba_soil_carbon.xlsx"
 
-<!-- Instructions to configure the excel files from zoom and qualtrics -->
+
 ```{r echo = FALSE}
-# INSTRUCTIONS
-# 
-# create a worksheet FROM THE ZOOM OUTPUT that is cleaned with the following features
-# a. name the worksheet "full_cleaned" for attendee data and "registration" for registration data. 
-# Manually condense users with multiple entries. 
-# (note 6/19/2025 - it isn't clear why I need a separate file for "registration". That data is duplicative with 
-#     "full_cleaned" if the variable "attended" (yes/no) is included.)
-
+# create a worksheet that is cleaned with the following features
+# a. name the worksheet "full_cleaned". Manually condense users with multiple entries.
 # b. retain attended and those who didn't attend
-
-# c. select the join and leave columns. Right click and make the column type "numeric" with 8 decimal places.
-
-
-# d. (revised 6/19/2025) column names: attended name first last email postal state join leave duration perspective ceu acres notification
-#       the sheet "full_cleaned" includes the column attended with "yes and no". The df-input_zoom is constructed to include 
-#       the variables in the format presented from zoom into excel.
-
+# c. remove the day/month/year (or see the code for "str_remove")
+# d. use these as variables: attended	user	first	last	email	country	postal	
+#       state	join	leave	duration	perspective	ceu	acres	notifications
 # e. paste the variable from step "d" into row 11.
- 
-# create a worksheet FROM THE QUALTRICS OUTPUT that is named "survey_cleaned"
 # f. past these variables into row 10 of the qualtrics file
 #     responded	perspective	perspective_other	viewing	state	acres	awareness	knowledge	
 #     action	general_comment	webinar_freq	workshop_freq	topics	
@@ -80,104 +80,40 @@ library(webshot2)
 ```
 
 
-
-
-<!-- Create the pathways to input and export datafiles -->
 ```{r echo = FALSE}
 # Create Paths
-#in the console, type:   file.choose(), select the file, and then paste the path into the code below.
 
-# file_path_registration <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interferencep\\2025_may_21_registration.xlsx"
+file_path_zoom <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_12_soil_carbon_Kosiba\\2024_12_18_Kosiba_soil_carbon.xlsx"
 
-file_path_zoom <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_12_17_soil_carbon_Orefice\attendee_soil_carbon_2025_12_17.xlsx"
+# I pasted the qualtrics data into a worksheet of the zoom file/folder/path
+# file_path_qualtrics <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_11_20_Sullivan_pollinators_qualtrics.xlsx"
 
-file_path_qualtrics <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_12_17_soil_carbon_Orefice\qualtrics_soil_carbon_2025_12_17.xlsx"
+webinar_name <- "2024_12_soil_carbon_Kosiba" 
 
-
-webinar_name <- "2025_12_17_Silvopasture_Soil_Carbon_Orefice" 
-
-output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_09_17_slash_wall_research"
+output_folder <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2024.data.attend.exit\\2024_12_soil_carbon_Kosiba\\"
 
 ```
 
-
-
-
-
-<!-- Read Data from Zoom and Qualtrics -->
+<!-- This is a hidden comment that won't print in Knitr for Rmarkdown -->
 ```{r  echo = FALSE}
-# Read Data from 1 Zoom files and Qualtrics
-
-#run this function before the "input_zoom" chunk to make the data right
-# Function to convert Excel time decimal to time string
-# IMPORTANT: In Excel, right click the join and leave columns, change format to numeric with 8 decimal places
-excel_time_to_time <- function(x) {
-  # Convert to numeric if not already
-  x <- as.numeric(x)
-  
-  # Get just the decimal part (time portion)
-  time_decimal <- x - floor(x)
-  
-  # Convert to seconds since midnight
-  seconds <- time_decimal * 86400
-  
-  # Convert to hours and minutes
-  hours <- floor(seconds / 3600)
-  minutes <- floor((seconds %% 3600) / 60)
-  
-  # Use ifelse for vectorized operations
-  ifelse(hours == 0, sprintf("12:%02d AM", minutes),
-  ifelse(hours < 12, sprintf("%d:%02d AM", hours, minutes),
-  ifelse(hours == 12, sprintf("12:%02d PM", minutes),
-         sprintf("%d:%02d PM", hours - 12, minutes))))
-}
+# Read Data from Zoom and Qualtrics
 
 
-input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
-  filter(!(duration=="x")) %>% 
-  select(-delete1, -delete2) %>% 
-
-    mutate(
-    join  = as.numeric(join),   # Convert to numeric first
-    leave = as.numeric(leave)   # Convert to numeric first
-  ) %>%
-    
-  mutate(
-    join  = excel_time_to_time(join),
-    leave = excel_time_to_time(leave)
-  ) %>% 
-    
-  #     mutate(
-  #   join  = as.POSIXct((as.numeric(join) * 86400), origin = "1899-12-30", tz = "America/New_York"),
-  #   leave = as.POSIXct((as.numeric(leave) * 86400), origin = "1899-12-30", tz = "America/New_York")
-  # ) %>%
-  # mutate(
-  #   join  = format(join, "%I:%M %p"),
-  #   leave = format(leave, "%I:%M %p")
-  # ) %>% 
-          
-          
-  mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% 
-    #removes those characters from the acres varaible
-  mutate(acres = if_else(
+input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip=9) %>% 
+    mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres varaible
+    mutate(acres = if_else(
         str_detect(acres, "-"),
         str_extract(acres, "(?<=-)[0-9]+"),  # Extract the number after the hyphen
         acres
   )) %>% 
- 
-  mutate(across(everything(), ~ gsub("%", "\\\\%", .x))) %>%
-  mutate(across(everything(), ~ gsub("&", "\\\\&", .x))) %>%
-  mutate(across(everything(), ~ gsub("#", "\\\\#", .x))) %>% 
-  mutate(across(everything(), ~ gsub("_", "\\\\_", .x))) %>%
-  mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x))) %>% 
-
-  mutate(
-        acres = as.numeric(acres),
-        duration = as.numeric(duration)
+    mutate(join = str_remove(join, "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b")) %>%  #removes day/month/year from "join"
+    mutate(leave = str_remove(leave, "\\b\\d{1,2}/\\d{1,2}/\\d{4}\\b")) %>% #removes day/month/year from "leave"
+    mutate(
+        duration = as.numeric(duration),
+        acres = as.numeric(acres)
     )
 
-
-input_qualtrics <- read_excel(file_path_qualtrics, sheet = "survey_cleaned", skip = 9) %>% 
+input_qualtrics <- read_excel(file_path_zoom, sheet = , skip = 9) %>% 
     select(perspective, state, acres, awareness, knowledge, action, general_comment,
            webinar_freq, workshop_freq, topics, logistics, questions, miles, dollars) %>% 
     mutate(acres = str_remove_all(acres, "[,\\+ ]")) %>% #removes those characters from the acres variable
@@ -221,33 +157,20 @@ input_qualtrics <- read_excel(file_path_qualtrics, sheet = "survey_cleaned", ski
            )
 
 
-input_qualtrics <- input_qualtrics %>%
-  mutate(across(everything(), ~ gsub("%", "\\\\%", .x))) %>%
-  mutate(across(everything(), ~ gsub("&", "\\\\&", .x))) %>%
-  mutate(across(everything(), ~ gsub("#", "\\\\#", .x))) %>% 
-  mutate(across(everything(), ~ gsub("_", "\\\\_", .x))) %>%
-  mutate(across(everything(), ~ gsub("\\$", "\\\\$", .x))) %>% 
-    mutate(
-        acres = as.numeric(acres),
-        miles = as.numeric(miles),
-        dollars = as.numeric(dollars)
-    )
-
-
 ```
 
 
 
-<!-- #CEU Database Create data file to paste into CEU documentation -->
+<!-- This is a hidden comment that won't print in Knitr for Rmarkdown -->
 ```{r echo = FALSE }
 # Create data file to paste into CEU documentation
 
 CEU_1 <- input_zoom %>% 
-    select( attended, email, first, last, postal, state, join, leave, duration, ceu) %>%
+    select(attended, first, last, email, postal, state, join, leave, duration, ceu) %>%
     filter(!str_detect(ceu, "do not want or need")) %>% 
     filter(! attended == "No") %>% 
-    arrange(ceu, last) %>% 
-    select(email, first, last, postal, state, join, leave, duration, ceu)
+    select(email, first, last, postal, state, join, leave, duration, ceu) %>% 
+    arrange(ceu, last)
 
 
 # Construct the full file path
@@ -260,15 +183,15 @@ write_xlsx(CEU_1, output_file_ceu)
 
 
 
-<!-- Create file for listserve -->
+<!-- This is a hidden comment that won't print in Knitr for Rmarkdown -->
 ```{r echo = FALSE }
 # Create file for listserve
 # EmailAddr_,FullName_
 
 
 listserve <- input_zoom %>% 
-    select(first, last, email, notification) %>% 
-    filter(str_detect(notification, "please add me")) %>% 
+    select(first, last, email, notifications) %>% 
+    filter(str_detect(notifications, "please add me")) %>% 
     mutate(full = paste(first, last, sep = " ")) %>% 
     select(email, full) %>% 
     rename(
@@ -290,11 +213,13 @@ write_csv(listserve, output_file_listserve)
 
 
 summ_partic <- input_zoom %>% 
-    select(state, duration, perspective, acres) %>% 
+    select(attended, state, duration, perspective, acres) %>% 
+    filter(attended == "Yes") %>% 
     summarize(
         Registered = n(),
-        Participants_gtr20min = sum(duration > 19, na.rm = TRUE),
-        Total_Acres_gtr20min = sum(acres[duration > 19], na.rm = TRUE),
+        Participants_gtr20min = sum(attended == "Yes" & duration > 19, na.rm = TRUE),
+        Total_Acres_gtr20min = sum(acres[attended == "Yes" & duration > 19], na.rm = TRUE),
+        # Sum of acres where attended == "Yes" and duration > 19
         States_Provinces = n_distinct(state),
     ) %>% 
     mutate(
@@ -318,19 +243,15 @@ missing_perspectives <- data.frame(
   pct_perspective = 0
 )
 
-#determine total number of attended
-# (22sept2025 - check df=input_zoom if attended is yes or Yes)
-total_attended <- input_zoom %>% 
-  filter(attended == "Yes") %>% 
-  nrow()
-
 summ_perspective1 <- input_zoom %>% 
-  filter(attended == "Yes") %>%  # Keep only those who attended
-  group_by(perspective) %>%
-  summarize(count_attended = n()) %>%
-  mutate(
-    pct_perspective = round((count_attended / total_attended) * 100, 0)
-  ) %>%
+  filter(attended == "Yes") %>%  # Filter to only attended == "Yes"
+  group_by(perspective) %>%  # Group by perspective
+  summarize(
+    count_attended = n(),  # Count the number of rows for each perspective
+    pct_perspective = (count_attended / nrow(filter(input_zoom, attended == "Yes"))) * 100  
+    # Calculate percentage for each group_by
+  ) %>% 
+  mutate_if(is.numeric, round, 0) %>% 
   arrange(perspective)  # Sort by perspective alphabetically
 
 summ_perspective2 <- bind_rows(summ_perspective1, missing_perspectives) %>% 
@@ -342,7 +263,6 @@ summ_perspective2 <- bind_rows(summ_perspective1, missing_perspectives) %>%
             Metric = perspective,
             Impact = Perspective_pct
         ) %>% 
-    drop_na(Metric) %>% 
     mutate(
         Impact = as.character(Impact)
     ) %>% 
@@ -384,7 +304,7 @@ exit_metrics <- input_qualtrics %>%
     mutate(
         acres_qualtrics = scales::comma(acres_qualtrics),
         Miles_equivalent = scales::comma(Miles_equivalent),
-        Financial_impact = scales::comma(Financial_impact)
+        Financial_impact = scales::dollar(Financial_impact)
     ) %>% 
     mutate(
         Survey_respondents = as.character(Survey_respondents),
@@ -447,28 +367,6 @@ write_xlsx(summary_page, output_file_summary)
 
 ```
 
-#code to dump the DF as excel and as pdf
-```{r eval=FALSE echo=FALSE}
-# Excel export (you already have this)
-write_xlsx(summary_page, output_file_summary)
-
-# PDF export (simple table snapshot)
-library(gridExtra)
-library(ggplot2)
-
-# Construct a matching PDF filename
-output_file_summary_pdf <- sub("\\.xlsx$", ".pdf", output_file_summary)
-
-# Convert dataframe to a table grob
-table <- tableGrob(summary_page)
-
-# Save as PDF
-ggsave(output_file_summary_pdf, table, width = 8.5, height = 11)
-
-```
-
-
-
 
 <!-- Create summary of actions intended -->
 
@@ -508,91 +406,45 @@ general <- input_qualtrics %>%
 
 ```
 
-[webinar archived at] https://youtu.be/wdK4WfuI-9c
-<!-- Create summary of General Comments -->
-
-
-```{r}
-# write a function to clean "escape" characters that aren't compatible with LaTex
-# 
-
-escape_latex_chars <- function(df) {
-  df[] <- lapply(df, function(x) {
-    if (is.character(x)) {
-      # Escape LaTeX special characters
-      x <- gsub("%", "\\\\%", x)
-      x <- gsub("&", "\\\\&", x)
-      x <- gsub("#", "\\\\#", x)
-      x <- gsub("_", "\\\\_", x)
-      x <- gsub("\\$", "\\\\$", x)
-      x <- gsub("\\!", "\\\\!", x)
-      x <- gsub("\\{", "\\\\{", x)
-      x <- gsub("\\}", "\\\\}", x)
-
-      # Fix curly quotes
-      x <- gsub("[\u201C\u201D]", "\"", x) # “ ” to "
-      x <- gsub("[\u2018\u2019]", "'", x)  # ‘ ’ to '
-
-      # Optional: if you want to fix en-dashes/em-dashes too:
-      # x <- gsub("\u2013|\u2014", "--", x) # – and — to double dash
-    }
-    x
-  })
-  return(df)
-}
-```
-
+[webinar archived at](https://youtu.be/MCFi6ZKj4Gs)
 
 ```{r echo = FALSE}
 
+# kable(summary_page, caption = "Summary of Webinar Metrics") %>%
+#   kable_styling(full_width = FALSE, position = "center", latex_options = "hold_position") # no lines
 
-summary_page_clean <- escape_latex_chars(summary_page)  
 
-summary_table <- kable(summary_page_clean, caption = "Summary of Webinar Metrics") %>%
+kable(summary_page, caption = "Summary of Webinar Metrics") %>%
   kable_styling(full_width = FALSE, position = "center", 
                 latex_options = c("striped", "hold_position")) %>%
   #add_header_above(c(" " = 2)) %>%   # Add space to header if needed
   row_spec(0, bold = TRUE, font_size = 14) %>%  # Optional: styling header row
-  row_spec(1:nrow(summary_page_clean), hline_after = TRUE)  # Add horizontal lines after each row
-
-save_kable(summary_table, "table_summary_page_clean.pdf")
+  row_spec(1:nrow(summary_page), hline_after = TRUE)  # Add horizontal lines after each row
 ```
 
 
 
 ```{r}
-
-general_clean <- escape_latex_chars(general) 
-
-general_table <- kable(general_clean, caption = "General Comments by Survey Respondents") %>% 
+kable(general, caption = "General Comments by Survey Respondents") %>% 
       kable_styling(full_width = FALSE, position = "center", 
                 latex_options = c("striped", "hold_position")) %>%
   add_header_above(c(" " = 2)) %>%   # Add space to header if needed
   row_spec(0, bold = TRUE, font_size = 14) %>%  # Optional: styling header row
-  row_spec(1:nrow(general_clean), hline_after = TRUE) %>%   # Add horizontal lines after each row
+  row_spec(1:nrow(general), hline_after = TRUE) %>%   # Add horizontal lines after each row
     column_spec(1, width = "5cm") %>% 
     column_spec(2, width = "10cm")
-
-save_kable(general_table, "table_general_page_clean.pdf")
-
 ```
 
 
 \newpage
 ```{r}
-
-actions_clean <- escape_latex_chars(actions) 
-
-summary_actions <- kable(actions_clean, caption = "Actions Intended by Survey Respondents as a Result of the Webinar") %>% 
+kable(actions, caption = "Actions Intended by Survey Respondents as a Result of the Webinar") %>% 
       kable_styling(full_width = FALSE, position = "center", 
                 latex_options = c("striped", "hold_position")) %>%
   add_header_above(c(" " = 2)) %>%   # Add space to header if needed
   row_spec(0, bold = TRUE, font_size = 14) %>%  # Optional: styling header row
-  row_spec(1:nrow(actions_clean), hline_after = TRUE) %>%   # Add horizontal lines after each row
+  row_spec(1:nrow(actions), hline_after = TRUE) %>%   # Add horizontal lines after each row
   column_spec(2, width = "10cm")
-
-
-save_kable(summary_actions, "table_actions_page_clean.pdf")
 
 ```
 

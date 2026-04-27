@@ -1,9 +1,0 @@
-"0","input_zoom <- read_excel(file_path_zoom, sheet = ""full_cleaned"", skip = 0) %>%
-  mutate(join = format(join, ""%H:%M""))
-"
-"1","[1m[33mError[39m in `mutate()`:[22m
-[38;5;232m[36mℹ[38;5;232m In argument: `join = format(join, ""%H:%M"")`.[39m
-[1mCaused by error in `format.default()`:[22m
-[33m![39m invalid 'trim' argument
-[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
-"

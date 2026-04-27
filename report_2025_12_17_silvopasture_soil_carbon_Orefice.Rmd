@@ -89,14 +89,15 @@ library(webshot2)
 
 # file_path_registration <- "C:\\Users\\pjs23\\Documents\\Projects\\CCE\\Webinar Data and Files\\webinar evaluation montly summary\\2025.data.attend.exit\\2025_06_19_Nyland_interferencep\\2025_may_21_registration.xlsx"
 
-file_path_zoom <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_12_17_soil_carbon_Orefice\attendee_soil_carbon_2025_12_17.xlsx"
 
-file_path_qualtrics <- "C:\Users\pjs23\Documents\Projects\CCE\Webinar Data and Files\webinar evaluation montly summary\2025.data.attend.exit\2025_12_17_soil_carbon_Orefice\qualtrics_soil_carbon_2025_12_17.xlsx"
+file_path_zoom <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_12_17_soil_carbon_Orefice/attendee_soil_carbon_2025_12_17.xlsx"
 
+
+file_path_qualtrics <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_12_17_soil_carbon_Orefice/qualtrics_soil_carbon_2025_12_17.xlsx"
 
 webinar_name <- "2025_12_17_Silvopasture_Soil_Carbon_Orefice" 
 
-output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_09_17_slash_wall_research"
+output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/webinar evaluation montly summary/2025.data.attend.exit/2025_12_17_soil_carbon_Orefice"
 
 ```
 
@@ -106,7 +107,7 @@ output_folder <- "C:/Users/pjs23/Documents/Projects/CCE/Webinar Data and Files/w
 
 <!-- Read Data from Zoom and Qualtrics -->
 ```{r  echo = FALSE}
-# Read Data from 1 Zoom files and Qualtrics
+# Read Data from 1 Zoom file and 1 Qualtrics file
 
 #run this function before the "input_zoom" chunk to make the data right
 # Function to convert Excel time decimal to time string
@@ -133,19 +134,22 @@ excel_time_to_time <- function(x) {
 }
 
 
-input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 0) %>%
+input_zoom <- read_excel(file_path_zoom, sheet = "full_cleaned", skip = 10) %>%
   filter(!(duration=="x")) %>% 
-  select(-delete1, -delete2) %>% 
+  #select(-delete1, -delete2) %>% 
 
-    mutate(
-    join  = as.numeric(join),   # Convert to numeric first
-    leave = as.numeric(leave)   # Convert to numeric first
-  ) %>%
-    
-  mutate(
-    join  = excel_time_to_time(join),
-    leave = excel_time_to_time(leave)
-  ) %>% 
+# the following code from the "excel_time" function doesn't appear to be needed 
+# if the "join" and "leave" are changed to "numeric with 8 decimals.
+# 
+  #   mutate(
+  #   join  = as.numeric(join),   # Convert to numeric first
+  #   leave = as.numeric(leave)   # Convert to numeric first
+  # ) %>%
+  #   
+  # mutate(
+  #   join  = excel_time_to_time(join),
+  #   leave = excel_time_to_time(leave)
+  # ) %>% 
     
   #     mutate(
   #   join  = as.POSIXct((as.numeric(join) * 86400), origin = "1899-12-30", tz = "America/New_York"),
@@ -364,7 +368,7 @@ summ_ceu <- CEU_1 %>%
         sequence = c("W")
     )
     
-
+valid_levels <- c("high", "mod_high", "moderate", "min_mod", "minimal")
 
 exit_metrics <- input_qualtrics %>%
     select(perspective, acres, awareness, knowledge, action, general_comment, miles, dollars) %>% 
@@ -375,12 +379,23 @@ exit_metrics <- input_qualtrics %>%
         Action_intended_count = sum(!is.na(action)),
         Action_pct = (Action_intended_count / Survey_respondents) * 100,
         Financial_impact = sum(dollars, na.rm = TRUE),
-        Awareness_pct = sum(awareness %in% c("high", "mod_high", "moderate")) / 
-            sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100,
-        Knowledge_pct = sum(knowledge %in% c("high", "mod_high", "moderate")) / 
-            sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100
+
+        Awareness_pct =
+            sum(awareness %in% c("high", "mod_high", "moderate"), na.rm = TRUE) /
+            sum(awareness %in% valid_levels, na.rm = TRUE) * 100,
+
+        Knowledge_pct =
+            sum(knowledge %in% c("high", "mod_high", "moderate"), na.rm = TRUE) /
+            sum(knowledge %in% valid_levels, na.rm = TRUE) * 100
+
+        # Awareness_pct = sum(awareness %in% c("high", "mod_high", "moderate")) / 
+        #     sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100,
+        # Knowledge_pct = sum(knowledge %in% c("high", "mod_high", "moderate")) / 
+        #     sum(awareness %in% c("high", "mod_high", "moderate", "min_mod", "minimal")) * 100
     ) %>% 
-    mutate_if(is.numeric, round, 0) %>% 
+
+    
+        mutate_if(is.numeric, round, 0) %>% 
     mutate(
         acres_qualtrics = scales::comma(acres_qualtrics),
         Miles_equivalent = scales::comma(Miles_equivalent),
@@ -508,7 +523,7 @@ general <- input_qualtrics %>%
 
 ```
 
-[webinar archived at] https://youtu.be/wdK4WfuI-9c
+[webinar archived at] https://youtu.be/dPvYk0luB0U
 <!-- Create summary of General Comments -->
 
 
@@ -548,7 +563,10 @@ escape_latex_chars <- function(df) {
 
 summary_page_clean <- escape_latex_chars(summary_page)  
 
-summary_table <- kable(summary_page_clean, caption = "Summary of Webinar Metrics") %>%
+summary_table <- kable(
+  summary_page_clean,
+  caption = paste("Webinar Summary:", webinar_name)
+) %>%
   kable_styling(full_width = FALSE, position = "center", 
                 latex_options = c("striped", "hold_position")) %>%
   #add_header_above(c(" " = 2)) %>%   # Add space to header if needed
